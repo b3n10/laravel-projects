@@ -1,10 +1,17 @@
 <template>
-	<div class="chat__message">
-		<strong class="chat__message-user">Ethan</strong>
-		<span class="chat__message-timestamp">45343</span>
-		<p class="chat__message-body">Message</p>
+	<div class="chat__message" v-bind:class="{ 'chat__message-own': msg.ownMsg }">
+		<strong class="chat__msg-user">{{ msg.user.name }}</strong>
+		<span class="chat__msg-timestamp">{{ msg.created_at }}</span>
+		<p class="chat__msg-body">{{ msg.body }}</p>
 	</div>
 </template>
+
+<script>
+export default {
+	// this will accept msg from ChatMessages.vue
+	props: ['msg']
+}
+</script>
 
 <style lang="scss">
 .chat {

@@ -1,8 +1,27 @@
 <template>
 	<div class="chat__messages">
-		<chat-message></chat-message>
+		<chat-message
+			v-for="msg in msgs"
+			:key="msg.id"
+			:msg="msg">
+		</chat-message>
 	</div>
 </template>
+
+<script>
+export default {
+	data() {
+		return {
+			msgs: []
+		}
+	},
+	mounted() {
+		axios.get('/chat/message').then((response) => {
+			this.msgs = response.data
+		});
+	}
+}
+</script>
 
 <style lang="scss">
 .chat {

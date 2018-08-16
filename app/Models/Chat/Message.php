@@ -3,6 +3,7 @@
 namespace App\Models\Chat;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Message extends Model
 {
@@ -11,10 +12,12 @@ class Message extends Model
 	];
 
 	/*
-	 * append a value in the JSON of this model
-	 * */
+	 * append value to requested query and return to response
+	 * but not add to db
+	 */
 	protected $appends = [
-		'ownMsg'
+		'ownMsg',
+		'testMe'
 	];
 
 	/*
@@ -23,6 +26,10 @@ class Message extends Model
 	 */
 	public function getOwnMsgAttribute() {
 		return $this->user_id === auth()->user()->id;
+	}
+
+	public function getTestMeAttribute() {
+		return 'this is test';
 	}
 
 	public function user() {
