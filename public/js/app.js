@@ -1652,12 +1652,15 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = {
 	data: function data() {
 		return {
-			body: null
+			body: null,
+			bodyBackedUp: null
 		};
 	},
 
 	methods: {
 		handleMessageInput: function handleMessageInput(e) {
+			this.bodyBackedUp = this.body;
+
 			if (e.keyCode === 13 && !e.shiftKey) {
 				e.preventDefault();
 				this.send();
@@ -1685,11 +1688,19 @@ exports.default = {
 			};
 		},
 		send: function send() {
+			var _this = this;
+
 			if (!this.body || this.body.trim() === '') return;
 
 			var tempMessage = this.tempMsg();
-
 			_bus2.default.$emit('add-message', tempMessage);
+
+			axios.post('/chat/message', {
+				messageBody: this.body.trim()
+			}).catch(function () {
+				_this.body = _this.bodyBackedUp;
+				_bus2.default.$emit('fail-message', tempMessage);
+			});
 
 			this.body = null;
 		}
@@ -1764,6 +1775,14 @@ exports.default = {
 			msgs: []
 		};
 	},
+
+	methods: {
+		removeMsg: function removeMsg(id) {
+			this.msgs = this.msgs.filter(function (msg) {
+				return msg.id !== id;
+			});
+		}
+	},
 	mounted: function mounted() {
 		var _this = this;
 
@@ -1774,8 +1793,9 @@ exports.default = {
 		_bus2.default.$on('add-message', function (data) {
 			// unshift appends at the beginning of msgs array
 			_this.msgs.unshift(data);
-
 			data.ownMsg && (_this.$refs.message.scrollTop = 0);
+		}).$on('fail-message', function (data) {
+			_this.removeMsg(data.id);
 		});
 	}
 }; //
@@ -5795,7 +5815,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.chat__message {\n  padding: 15px;\n  border-bottom: 1px solid #eee;\n}\n.chat__message-own {\n    background-color: #f0f0f0;\n}\n.chat__message-user {\n    font-weight: 800;\n}\n.chat__message-timestamp {\n    color: #aaa;\n}\n.chat__message-body {\n    margin-bottom: 0;\n    white-space: pre-wrap;\n}\n", ""]);
+exports.push([module.i, "\n.chat__message {\n  padding: 15px;\n  border-bottom: 1px solid #eee;\n}\n.chat__message-own {\n    background-color: #f0f0f0;\n}\n.chat__message-user {\n    font-weight: 800;\n}\n.chat__message-timestamp {\n    color: #aaa;\n}\n.chat__message-body {\n    margin-bottom: 0;\n    white-space: pre-wrap;\n}\n.chat__message-error {\n    display: none;\n}\n.chat__message-error-show {\n    display: inline;\n    color: #dd1144;\n}\n", ""]);
 
 // exports
 
@@ -36641,15 +36661,26 @@ var render = function() {
       class: { "chat__message-own": _vm.msg.ownMsg }
     },
     [
-      _c("strong", { staticClass: "chat__msg-user" }, [
+      _c("strong", { staticClass: "chat__message-user" }, [
         _vm._v(_vm._s(_vm.msg.user.name))
       ]),
       _vm._v(" "),
-      _c("span", { staticClass: "chat__msg-timestamp" }, [
+      _c("span", { staticClass: "chat__message-timestamp" }, [
         _vm._v(_vm._s(_vm.msg.created_at))
       ]),
+      _c(
+        "span",
+        {
+          class: [
+            _vm.msg.failMsg ? "chat__message-error-show" : "chat__message-error"
+          ]
+        },
+        [_vm._v(" - failed to send. Please try again!")]
+      ),
       _vm._v(" "),
-      _c("p", { staticClass: "chat__msg-body" }, [_vm._v(_vm._s(_vm.msg.body))])
+      _c("p", { staticClass: "chat__message-body" }, [
+        _vm._v(_vm._s(_vm.msg.body))
+      ])
     ]
   )
 }
@@ -48123,7 +48154,6 @@ try {
 window.axios = __webpack_require__("./node_modules/axios/index.js");
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.axios.defaults.headers.common['X-CSRF-Token'] = window.Laravel.csrfToken;
 
 /**
  * Next we will register the CSRF Token as a common header with Axios so that

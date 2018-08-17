@@ -1,8 +1,8 @@
 <template>
 	<div class="chat__message" v-bind:class="{ 'chat__message-own': msg.ownMsg }">
-		<strong class="chat__msg-user">{{ msg.user.name }}</strong>
-		<span class="chat__msg-timestamp">{{ msg.created_at }}</span>
-		<p class="chat__msg-body">{{ msg.body }}</p>
+		<strong class="chat__message-user">{{ msg.user.name }}</strong>
+		<span class="chat__message-timestamp">{{ msg.created_at }}</span><span v-bind:class="[ msg.failMsg ? 'chat__message-error-show' : 'chat__message-error' ]"> - failed to send. Please try again!</span>
+		<p class="chat__message-body">{{ msg.body }}</p>
 	</div>
 </template>
 
@@ -34,6 +34,15 @@ export default {
 		&-body {
 			margin-bottom: 0;
 			white-space: pre-wrap;
+		}
+
+		&-error {
+			display: none;
+		}
+
+		&-error-show {
+			display: inline;
+			color: #dd1144;
 		}
 	}
 }

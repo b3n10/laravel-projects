@@ -24,11 +24,14 @@ import Bus from '../../bus';
 export default {
 	data() {
 		return {
-			body: null
+			body: null,
+			bodyBackedUp: null
 		}
 	},
 	methods: {
 		handleMessageInput(e) {
+			this.bodyBackedUp = this.body;
+
 			if (e.keyCode === 13 && !e.shiftKey) {
 				e.preventDefault();
 				this.send()
@@ -70,8 +73,14 @@ export default {
 			if (!this.body || this.body.trim() === '') return;
 
 			let tempMessage = this.tempMsg();
-
 			Bus.$emit('add-message', tempMessage);
+
+			axios.post('/chat/message', {
+				messageBody: this.body.trim()
+			}).catch(() => {
+				this.body = this.bodyBackedUp;
+				Bus.$emit('fail-message', tempMessage);
+			});
 
 			this.body = null;
 		}
