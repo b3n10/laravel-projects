@@ -13,13 +13,17 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 		<script>
-			window.Laravel = @json([
+			window.Laravel = {!! json_encode([
 				'csrfToken'	=> csrf_token(),
+				'pusher'	=> [
+					'key'			=>	config('broadcasting.connections.pusher.key'),
+					'cluster' =>	config('broadcasting.connections.pusher.options.cluster')
+				],
 				'user'			=> [
 					'id'		=>	auth()->user()->id ?? null,
 					'name'	=>	auth()->user()->name ?? null
 				]
-			]);
+			]) !!};
 		</script>
 
     <!-- Fonts -->

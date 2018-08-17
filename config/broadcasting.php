@@ -1,5 +1,10 @@
 <?php
 
+$key = getenv('PUSHER_APP_KEY') ?? env('PUSHER_APP_KEY');
+$secret = getenv('PUSHER_APP_SECRET') ?? env('PUSHER_APP_SECRET');
+$app_id = getenv('PUSHER_APP_ID') ?? env('PUSHER_APP_ID');
+$cluster = getenv('PUSHER_APP_CLUSTER') ?? env('PUSHER_APP_CLUSTER');
+
 return [
 
     /*
@@ -15,7 +20,7 @@ return [
     |
     */
 
-    'default' => env('BROADCAST_DRIVER', 'null'),
+    'default' => env('BROADCAST_DRIVER', 'pusher'),
 
     /*
     |--------------------------------------------------------------------------
@@ -32,11 +37,11 @@ return [
 
         'pusher' => [
             'driver' => 'pusher',
-            'key' => env('PUSHER_APP_KEY'),
-            'secret' => env('PUSHER_APP_SECRET'),
-            'app_id' => env('PUSHER_APP_ID'),
+            'key' => $key,
+            'secret' => $secret,
+            'app_id' => $app_id,
             'options' => [
-                'cluster' => env('PUSHER_APP_CLUSTER'),
+                'cluster' => $cluster,
                 'encrypted' => true,
             ],
         ],

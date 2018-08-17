@@ -14,7 +14,8 @@ import Bus from '../../bus';
 export default {
 	data() {
 		return {
-			msgs: []
+			msgs: [],
+			failedID: 0
 		}
 	},
 	methods: {
@@ -31,8 +32,11 @@ export default {
 			// unshift appends at the beginning of msgs array
 			this.msgs.unshift(data);
 			data.ownMsg && (this.$refs.message.scrollTop = 0);
+			this.failedID = data.id;
 		}).$on('fail-message', (data) => {
-			this.removeMsg(data.id);
+			this.removeMsg(this.failedID);
+			this.msgs.unshift(data);
+			data.ownMsg && (this.$refs.message.scrollTop = 0);
 		});
 
 	}

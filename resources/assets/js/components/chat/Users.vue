@@ -2,10 +2,20 @@
 	<div class="users">
 		<div class="users__header">1 user online</div>
 		<div class="users__user">
-			<a href="#">Ethan</a>
+			<a href="#">{{ username }}</a>
 		</div>
 	</div>
 </template>
+
+<script>
+export default {
+	data() {
+		return {
+			username: Laravel.user.name
+		}
+	}
+}
+</script>
 
 <style lang="scss">
 $bpc: 1px solid #d3e0e9;

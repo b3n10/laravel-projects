@@ -79,6 +79,10 @@ export default {
 				messageBody: this.body.trim()
 			}).catch(() => {
 				this.body = this.bodyBackedUp;
+
+				let tempMessage = this.tempMsg();
+				tempMessage.failMsg = true;
+
 				Bus.$emit('fail-message', tempMessage);
 			});
 
