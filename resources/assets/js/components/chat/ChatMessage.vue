@@ -8,7 +8,7 @@
 
 <script>
 export default {
-	// this will accept msg from ChatMessages.vue
+	// props will accept msg from ChatMessages.vue
 	props: ['msg']
 }
 </script>

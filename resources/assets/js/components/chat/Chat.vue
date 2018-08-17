@@ -6,7 +6,10 @@
 				id="body"
 				cols="30"
 				rows="4"
-				class="chat__form-input">
+				class="chat__form-input"
+				v-model="body"
+				@keydown="handleMessageInput"
+				autofocus>
 			</textarea>
 			<span class="chat__form-helptext">
 				Hit enter to send or SHIFT + enter to go next line
@@ -16,8 +19,63 @@
 </template>
 
 <script>
+import Bus from '../../bus';
+
 export default {
-	//
+	data() {
+		return {
+			body: null
+		}
+	},
+	methods: {
+		handleMessageInput(e) {
+			if (e.keyCode === 13 && !e.shiftKey) {
+				e.preventDefault();
+				this.send()
+			}
+		},
+		fixTime(time) {
+			if (time < 10) return '0' + time;
+			return time;
+		},
+		fixMonth(month) {
+			if (month + 1 < 10) return '0' + (month + 1);
+			return month + 1;
+		},
+		tempMsg() {
+			const date = new Date();
+
+			return {
+				id: Date.now(),
+				body: this.body,
+				created_at:
+					date.getUTCFullYear() +
+					'-' +
+					this.fixMonth(date.getUTCMonth()) +
+					'-' +
+					date.getUTCDate() +
+					' ' +
+					this.fixTime(date.getHours()) +
+					':' +
+					this.fixTime(date.getMinutes()) +
+					':' +
+					this.fixTime(date.getSeconds()),
+				ownMsg: true,
+				user: {
+					name: Laravel.user.name
+				}
+			}
+		},
+		send() {
+			if (!this.body || this.body.trim() === '') return;
+
+			let tempMessage = this.tempMsg();
+
+			Bus.$emit('add-message', tempMessage);
+
+			this.body = null;
+		}
+	}
 }
 </script>
 

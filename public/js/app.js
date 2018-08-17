@@ -1642,27 +1642,78 @@ module.exports = {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _bus = __webpack_require__("./resources/assets/js/bus.js");
+
+var _bus2 = _interopRequireDefault(_bus);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
-	//
-};
+	data: function data() {
+		return {
+			body: null
+		};
+	},
+
+	methods: {
+		handleMessageInput: function handleMessageInput(e) {
+			if (e.keyCode === 13 && !e.shiftKey) {
+				e.preventDefault();
+				this.send();
+			}
+		},
+		fixTime: function fixTime(time) {
+			if (time < 10) return '0' + time;
+			return time;
+		},
+		fixMonth: function fixMonth(month) {
+			if (month + 1 < 10) return '0' + (month + 1);
+			return month + 1;
+		},
+		tempMsg: function tempMsg() {
+			var date = new Date();
+
+			return {
+				id: Date.now(),
+				body: this.body,
+				created_at: date.getUTCFullYear() + '-' + this.fixMonth(date.getUTCMonth()) + '-' + date.getUTCDate() + ' ' + this.fixTime(date.getHours()) + ':' + this.fixTime(date.getMinutes()) + ':' + this.fixTime(date.getSeconds()),
+				ownMsg: true,
+				user: {
+					name: Laravel.user.name
+				}
+			};
+		},
+		send: function send() {
+			if (!this.body || this.body.trim() === '') return;
+
+			var tempMessage = this.tempMsg();
+
+			_bus2.default.$emit('add-message', tempMessage);
+
+			this.body = null;
+		}
+	}
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 
@@ -1685,7 +1736,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 
 exports.default = {
-	// this will accept msg from ChatMessages.vue
+	// props will accept msg from ChatMessages.vue
 	props: ['msg']
 };
 
@@ -1700,16 +1751,12 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _bus = __webpack_require__("./resources/assets/js/bus.js");
+
+var _bus2 = _interopRequireDefault(_bus);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
 	data: function data() {
@@ -1723,8 +1770,24 @@ exports.default = {
 		axios.get('/chat/message').then(function (response) {
 			_this.msgs = response.data;
 		});
+
+		_bus2.default.$on('add-message', function (data) {
+			// unshift appends at the beginning of msgs array
+			_this.msgs.unshift(data);
+
+			data.ownMsg && (_this.$refs.message.scrollTop = 0);
+		});
 	}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 
@@ -36488,29 +36551,44 @@ var render = function() {
   return _c(
     "div",
     { staticClass: "chat" },
-    [_c("chat-messages"), _vm._v(" "), _vm._m(0)],
+    [
+      _c("chat-messages"),
+      _vm._v(" "),
+      _c("form", { staticClass: "chat__form", attrs: { action: "" } }, [
+        _c("textarea", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.body,
+              expression: "body"
+            }
+          ],
+          staticClass: "chat__form-input",
+          attrs: { id: "body", cols: "30", rows: "4", autofocus: "" },
+          domProps: { value: _vm.body },
+          on: {
+            keydown: _vm.handleMessageInput,
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.body = $event.target.value
+            }
+          }
+        }),
+        _vm._v(" "),
+        _c("span", { staticClass: "chat__form-helptext" }, [
+          _vm._v(
+            "\n\t\t\tHit enter to send or SHIFT + enter to go next line\n\t\t"
+          )
+        ])
+      ])
+    ],
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("form", { staticClass: "chat__form", attrs: { action: "" } }, [
-      _c("textarea", {
-        staticClass: "chat__form-input",
-        attrs: { id: "body", cols: "30", rows: "4" }
-      }),
-      _vm._v(" "),
-      _c("span", { staticClass: "chat__form-helptext" }, [
-        _vm._v(
-          "\n\t\t\tHit enter to send or SHIFT + enter to go next line\n\t\t"
-        )
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -36531,7 +36609,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "chat__messages" },
+    { ref: "message", staticClass: "chat__messages" },
     _vm._l(_vm.msgs, function(msg) {
       return _c("chat-message", { key: msg.id, attrs: { msg: msg } })
     })
@@ -48045,6 +48123,7 @@ try {
 window.axios = __webpack_require__("./node_modules/axios/index.js");
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.headers.common['X-CSRF-Token'] = window.Laravel.csrfToken;
 
 /**
  * Next we will register the CSRF Token as a common header with Axios so that
@@ -48076,6 +48155,26 @@ if (token) {
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/assets/js/bus.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _vue = __webpack_require__("./node_modules/vue/dist/vue.common.js");
+
+var _vue2 = _interopRequireDefault(_vue);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = new _vue2.default();
 
 /***/ }),
 
