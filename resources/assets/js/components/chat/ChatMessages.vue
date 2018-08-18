@@ -20,7 +20,7 @@ export default {
 	},
 	methods: {
 		removeMsg(id) {
-			this.msgs = this.msgs.filter((msg) => msg.id !== id);
+			this.msgs = this.msgs.filter(msg => msg.id !== id);
 		}
 	},
 	mounted() {

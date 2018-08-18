@@ -1828,23 +1828,41 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+var _bus = __webpack_require__("./resources/assets/js/bus.js");
+
+var _bus2 = _interopRequireDefault(_bus);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 exports.default = {
 	data: function data() {
 		return {
-			username: Laravel.user.name
+			users: []
 		};
+	},
+	mounted: function mounted() {
+		var _this = this;
+
+		_bus2.default.$on('users.here', function (users) {
+			_this.users = users;
+		}).$on('users.joined', function (user) {
+			_this.users.push(user);
+		}).$on('users.left', function (user) {
+			_this.users = _this.users.filter(function (u) {
+				return u.name !== user.name;
+			});
+		});
 	}
-};
+}; //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /***/ }),
 
@@ -5822,7 +5840,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.chat {\n  background-color: #fff;\n  border: 1px solid #d3e0e9;\n  border-radius: 3px;\n}\n.chat__form {\n    border-top: 1px solid #d3e0e9;\n    padding: 10px;\n}\n.chat__form-input {\n      width: 100%;\n      border: 1px solid #d3e0e9;\n      padding: 5px 10px;\n      outline: none;\n}\n.chat__form-helptext {\n      color: #aaa;\n}\n", ""]);
+exports.push([module.i, "\n.chat {\n  display: none;\n  background-color: #fff;\n  border: 1px solid #d3e0e9;\n  border-radius: 3px;\n}\n.chat__form {\n    border-top: 1px solid #d3e0e9;\n    padding: 10px;\n}\n.chat__form-input {\n      width: 100%;\n      border: 1px solid #d3e0e9;\n      padding: 5px 10px;\n      outline: none;\n}\n.chat__form-helptext {\n      color: #aaa;\n}\n", ""]);
 
 // exports
 
@@ -46357,13 +46375,27 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "users" }, [
-    _c("div", { staticClass: "users__header" }, [_vm._v("1 user online")]),
-    _vm._v(" "),
-    _c("div", { staticClass: "users__user" }, [
-      _c("a", { attrs: { href: "#" } }, [_vm._v(_vm._s(_vm.username))])
-    ])
-  ])
+  return _c(
+    "div",
+    { staticClass: "users" },
+    [
+      _c("div", { staticClass: "users__header" }, [
+        _vm._v(
+          _vm._s(_vm.users.length) +
+            " " +
+            _vm._s(_vm.users.length === 1 ? "user" : "users") +
+            " online"
+        )
+      ]),
+      _vm._v(" "),
+      _vm._l(_vm.users, function(user) {
+        return _c("div", { staticClass: "users__user" }, [
+          _c("a", { attrs: { href: "#" } }, [_vm._v(_vm._s(user.name))])
+        ])
+      })
+    ],
+    2
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -58006,6 +58038,8 @@ window.Echo = new _laravelEcho2.default({
   encrypted: true
 });
 
+__webpack_require__("./resources/assets/js/echo.js");
+
 /***/ }),
 
 /***/ "./resources/assets/js/bus.js":
@@ -58233,6 +58267,28 @@ if (false) {(function () {
 
 module.exports = Component.exports
 
+
+/***/ }),
+
+/***/ "./resources/assets/js/echo.js":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _bus = __webpack_require__("./resources/assets/js/bus.js");
+
+var _bus2 = _interopRequireDefault(_bus);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+Echo.join('chat').here(function (users) {
+	_bus2.default.$emit('users.here', users);
+}).joining(function (user) {
+	_bus2.default.$emit('users.joined', user);
+}).leaving(function (user) {
+	_bus2.default.$emit('users.left', user);
+});
 
 /***/ }),
 

@@ -96,6 +96,7 @@ export default {
 $bpc: 1px solid #d3e0e9;
 
 .chat {
+	display: none;
 	background-color: #fff;
 	border: $bpc;
 	border-radius: 3px;

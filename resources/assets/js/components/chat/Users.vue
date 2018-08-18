@@ -1,18 +1,31 @@
 <template>
 	<div class="users">
-		<div class="users__header">1 user online</div>
-		<div class="users__user">
-			<a href="#">{{ username }}</a>
+		<div class="users__header">{{ users.length }} {{ users.length === 1 ? 'user' : 'users' }} online</div>
+		<div class="users__user" v-for="user in users">
+			<a href="#">{{ user.name }}</a>
 		</div>
 	</div>
 </template>
 
 <script>
+import Bus from '../../bus';
+
 export default {
 	data() {
 		return {
-			username: Laravel.user.name
+			users: []
 		}
+	},
+	mounted() {
+		Bus.$on('users.here', users => {
+			this.users = users;
+		})
+			.$on('users.joined', user => {
+				this.users.push(user);
+			})
+			.$on('users.left', user => {
+				this.users = this.users.filter(u => u.name !== user.name);
+			});
 	}
 }
 </script>
