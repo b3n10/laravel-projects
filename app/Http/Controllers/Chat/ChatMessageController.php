@@ -8,6 +8,8 @@ use App\Http\Requests\Chat\StoreMessageRequest;
 
 use App\Models\Chat\Message;
 
+use App\Events\Chat\MessageCreated;
+
 class ChatMessageController extends Controller
 {
 	public function __construct() {
@@ -23,8 +25,12 @@ class ChatMessageController extends Controller
 		// return response(null, 500);
 		// user(): currect authenticated user
 		// message(): user-message relationship to create() (or insert to db) a message with $request->messageBody
-		$request->user()->message()->create([
+		$message = $request->user()->message()->create([
 			'body'	=>	$request->messageBody
 		]);
+
+		broadcast(new MessageCreated($message))->toOthers();
+
+		return response()->json($message, 200);
 	}
 }

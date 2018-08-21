@@ -5840,7 +5840,7 @@ exports = module.exports = __webpack_require__("./node_modules/css-loader/lib/cs
 
 
 // module
-exports.push([module.i, "\n.chat {\n  display: none;\n  background-color: #fff;\n  border: 1px solid #d3e0e9;\n  border-radius: 3px;\n}\n.chat__form {\n    border-top: 1px solid #d3e0e9;\n    padding: 10px;\n}\n.chat__form-input {\n      width: 100%;\n      border: 1px solid #d3e0e9;\n      padding: 5px 10px;\n      outline: none;\n}\n.chat__form-helptext {\n      color: #aaa;\n}\n", ""]);
+exports.push([module.i, "\n.chat {\n  background-color: #fff;\n  border: 1px solid #d3e0e9;\n  border-radius: 3px;\n}\n.chat__form {\n    border-top: 1px solid #d3e0e9;\n    padding: 10px;\n}\n.chat__form-input {\n      width: 100%;\n      border: 1px solid #d3e0e9;\n      padding: 5px 10px;\n      outline: none;\n}\n.chat__form-helptext {\n      color: #aaa;\n}\n", ""]);
 
 // exports
 
@@ -58288,6 +58288,10 @@ Echo.join('chat').here(function (users) {
 	_bus2.default.$emit('users.joined', user);
 }).leaving(function (user) {
 	_bus2.default.$emit('users.left', user);
+})
+// Chat.MessageCreated is the folder namespace of the event
+.listen('Chat.MessageCreated', function (e) {
+	_bus2.default.$emit('add-message', e.message);
 });
 
 /***/ }),
