@@ -1,6 +1,6 @@
 ## About Project
 
-....
+Chat application using VueJS and Pusher
 
 ## Note
 
@@ -9,3 +9,7 @@ Then after pushing to heroku, run command:
 ```sh
 heroku run php artisan migrate
 ```
+
+## Todo
+
+Deploy app in Heroku
